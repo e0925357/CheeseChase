@@ -24,6 +24,10 @@ Makefile*
 *-build-*
 build/
 
+# CMake
+
+CMakeLists.txt.user
+
 # QtCreator
 
 *.autosave
