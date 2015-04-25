@@ -3,8 +3,8 @@
 using namespace boost;
 using namespace std;
 
-BoostServerUDPHandler::BoostServerUDPHandler(asio::io_service &ioService, int serverPort) :
-    ioService(ioService), udpSocket(ioService, asio::ip::udp::endpoint(asio::ip::udp::v4(), serverPort))
+BoostServerUDPHandler::BoostServerUDPHandler(asio::io_service &ioService, asio::ip::udp::endpoint &clientEndpoint, int serverPort) :
+    ioService(ioService), udpSocket(ioService, asio::ip::udp::endpoint(asio::ip::udp::v4(), serverPort)), clientEndpoint(clientEndpoint)
 {
     receiveThread = new thread(&BoostServerUDPHandler::startThread, this);
 }
@@ -23,8 +23,8 @@ void BoostServerUDPHandler::startThread()
 
 void BoostServerUDPHandler::doReceive()
 {
-    asio::ip::udp::endpoint remoteEndpoint;
-    udpSocket.async_receive_from(asio::buffer(readBuffer), remoteEndpoint,
+    //asio::ip::udp::endpoint remoteEndpoint;
+    udpSocket.async_receive_from(asio::buffer(readBuffer), clientEndpoint,
                                          boost::bind(&BoostServerUDPHandler::handleReceive, this,
                                                      boost::asio::placeholders::error,
                                                      boost::asio::placeholders::bytes_transferred));

@@ -11,12 +11,13 @@ class BoostServerUDPHandler
 private:
     boost::asio::io_service &ioService;
     boost::asio::ip::udp::socket udpSocket;
+    boost::asio::ip::udp::endpoint clientEndpoint;
 
     std::array<char, 128> readBuffer;
     std::thread *receiveThread;
 
 public:
-    BoostServerUDPHandler(boost::asio::io_service &ioService, int serverPort);
+    BoostServerUDPHandler(boost::asio::io_service &ioService, boost::asio::ip::udp::endpoint &clientEndpoint, int serverPort);
     ~BoostServerUDPHandler();
 
     void startThread();

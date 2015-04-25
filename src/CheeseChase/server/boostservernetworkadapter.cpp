@@ -113,18 +113,19 @@ void BoostServerNetworkAdapter::clientHandler( asio::ip::tcp::socket &socket )
     }
     usersLock.unlock();
 
-    BoostServerUDPHandler *udpHandler = new BoostServerUDPHandler(ioService, serverPort);
+    asio::ip::udp::endpoint endPoint(socket.remote_endpoint().address(), 6654);
+    asio::io_service localService;
+    BoostServerUDPHandler *udpHandler = new BoostServerUDPHandler(localService, endPoint, serverPort);
 
     // Listen to TCP stream. If it ends, kill spawned UDP thread and end this thread
     len = socket.read_some(asio::buffer(buf), ec);
     if(ec == asio::error::eof) {
         cout << "EOF!!" << endl;
-        ioService.stop();
+        localService.stop();
         delete udpHandler;
         return; // Socket closed by peer.
     } else if(ec) {
         throw system::system_error(ec);
     }
-
 }
 
