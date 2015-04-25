@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <chrono>
 #include <boost/asio.hpp>
 
 #include "clientnetworkadapter.h"
@@ -27,9 +28,10 @@ int main()
     buffer.insert(buffer.end(), message.begin(), message.end());
     clientNetworkAdapter->send(buffer);
 
+    clientNetworkAdapter->send(buffer);
+    clientNetworkAdapter->send(buffer);
 
-    clientNetworkAdapter->send(buffer);
-    clientNetworkAdapter->send(buffer);
+    this_thread::sleep_for(chrono::milliseconds(5000));
 
     return 0;
 }

@@ -7,11 +7,13 @@
 #include <cstdlib>
 #include <mutex>
 #include <boost/asio.hpp>
+#include <boost/bind.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "servernetworkadapter.h"
+#include "boostserverudphandler.h"
 
 class BoostServerNetworkAdapter : public ServerNetworkAdapter
 {
@@ -37,7 +39,6 @@ private:
 
     void serverSocketHandler();
     void clientHandler(boost::asio::ip::tcp::socket &socket);
-    void clientUdpHandler(boost::asio::ip::udp::socket &socket);
 
 
 public:
