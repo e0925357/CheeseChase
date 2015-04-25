@@ -4,7 +4,8 @@ using namespace std;
 using namespace boost::asio;
 
 BoostClientNetworkAdapter::BoostClientNetworkAdapter(io_service &ioService) :
-    ioService(ioService), tcpResolver(ioService), tcpSocket(ioService)
+    ioService(ioService), tcpResolver(ioService), udpResolver(ioService),
+    tcpSocket(ioService), udpSocket(ioService), initialized(false)
 {
 
 }
@@ -23,7 +24,7 @@ void BoostClientNetworkAdapter::registerToServer(string ipaddress, string port)
     connect(tcpSocket, endpoint);
 
     // Send hello message to server
-    string hellomessage = "!hello 555";
+    string hellomessage = "!hello 5555";
     write(tcpSocket, buffer(hellomessage));
 
     // Receive answer
@@ -43,11 +44,20 @@ void BoostClientNetworkAdapter::registerToServer(string ipaddress, string port)
 
     // Parse answer
     // TODO!
+
+    // Initialize udpSocket
+    udpServerEndpoint = *udpResolver.resolve(
+                ip::udp::resolver::query(ip::udp::v4(), ipaddress, "2000"));
+    udpSocket.open(ip::udp::v4());
+
+    initialized = true;
 }
 
 void BoostClientNetworkAdapter::send(std::vector<unsigned char> &data)
 {
-
+    if(initialized) {
+        udpSocket.send_to(buffer(data), udpServerEndpoint);
+    }
 }
 
 void BoostClientNetworkAdapter::getSnapshot()

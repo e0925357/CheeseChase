@@ -11,10 +11,16 @@
 class BoostClientNetworkAdapter : public ClientNetworkAdapter
 {
 private:
+    bool initialized;
+
     boost::asio::io_service &ioService;
     boost::asio::ip::tcp::resolver tcpResolver;
+    boost::asio::ip::udp::resolver udpResolver;
 
     boost::asio::ip::tcp::socket tcpSocket;
+    boost::asio::ip::udp::socket udpSocket;
+
+    boost::asio::ip::udp::endpoint udpServerEndpoint;
 
 public:
     BoostClientNetworkAdapter(boost::asio::io_service &ioService);

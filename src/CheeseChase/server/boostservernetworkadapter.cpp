@@ -5,9 +5,9 @@ using namespace boost;
 
 int BoostServerNetworkAdapter::uuidGenerator = 0;
 
-BoostServerNetworkAdapter::BoostServerNetworkAdapter(asio::io_service &ioService) :
-    ioService(ioService), tcpAcceptor(ioService, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 2000)), running(true),
-    serversocketThread(nullptr)
+BoostServerNetworkAdapter::BoostServerNetworkAdapter(asio::io_service &ioService, const int serverPort) :
+    ioService(ioService), tcpAcceptor(ioService, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort)), running(true),
+    serversocketThread(nullptr), serverPort(serverPort)
 {
 }
 
@@ -16,10 +16,10 @@ BoostServerNetworkAdapter::~BoostServerNetworkAdapter()
 
 }
 
-void BoostServerNetworkAdapter::startServer(const int port)
+void BoostServerNetworkAdapter::startServer()
 {
     if(serversocketThread == nullptr) {
-        serversocketThread = new thread(&BoostServerNetworkAdapter::serverSocketHandler, this, port);
+        serversocketThread = new thread(&BoostServerNetworkAdapter::serverSocketHandler, this);
     }
 
     //TODO: Remove this line when main thread runs longer than a few seconds
@@ -42,7 +42,7 @@ vector<int> BoostServerNetworkAdapter::getUserInputs()
 {
 }
 
-void BoostServerNetworkAdapter::serverSocketHandler(int port)
+void BoostServerNetworkAdapter::serverSocketHandler()
 {
     while(running) {
         asio::ip::tcp::socket *socket = new asio::ip::tcp::socket(ioService);
@@ -93,7 +93,9 @@ void BoostServerNetworkAdapter::clientHandler( asio::ip::tcp::socket &socket )
         return;
     }
 
-    if(uuid == -1 || users.count(uuid) == 0) {
+    usersLock.lock();
+    map<int, int>::iterator uuidIter = users.find(uuid);
+    if(uuid == -1 || uuidIter == users.end()) {
         // create new UUID for user
         uuid = uuidGenerator++;
         users.insert(pair<int, int>(uuid, udpPort));        // TODO: Replace with object that stores IP-Address too
@@ -102,10 +104,50 @@ void BoostServerNetworkAdapter::clientHandler( asio::ip::tcp::socket &socket )
         string message = "!information " + to_string(uuid);
         asio::write(socket, asio::buffer(message));
     } else {
+        // Update information
+        uuidIter->second = udpPort;
+
         // Send ok
         string message = "!ok";
         asio::write(socket, asio::buffer(message));
     }
+    usersLock.unlock();
+
+    // Start UDP thread
+    asio::ip::udp::socket udpSocket(ioService, asio::ip::udp::endpoint(asio::ip::udp::v4(), serverPort));
+    thread udpThread(&BoostServerNetworkAdapter::clientUdpHandler, this, std::ref(udpSocket));
+
+    // Listen to TCP stream. If it ends, kill spawned UDP thread and end this thread
+    len = socket.read_some(asio::buffer(buf), ec);
+    if(ec == asio::error::eof) {
+        cout << "EOF!!" << endl;
+        return; // Socket closed by peer.
+    } else if(ec) {
+        throw system::system_error(ec);
+    }
+
+}
+
+
+void BoostServerNetworkAdapter::clientUdpHandler(boost::asio::ip::udp::socket &udpSocket)
+{
+    while(running) {
+        std::array<char, 128> buf;
+        buf.fill(' ');
+
+        asio::ip::udp::endpoint remoteEndpoint;
+        system::error_code ec;
+
+        udpSocket.receive_from(asio::buffer(buf), remoteEndpoint, 0, ec);
+
+        if(ec) {
+            break;
+        }
+        string receivedMessage(std::begin(buf), std::end(buf));
+        cout << receivedMessage << endl;
+    }
+
+    cout << "ended" << endl;
 
 }
 

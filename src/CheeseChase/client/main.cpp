@@ -22,6 +22,15 @@ int main()
     ClientNetworkAdapter *clientNetworkAdapter = new BoostClientNetworkAdapter(ioService);
     clientNetworkAdapter->registerToServer("localhost", "2000");
 
+    string message = "Client message";
+    vector<unsigned char> buffer;
+    buffer.insert(buffer.end(), message.begin(), message.end());
+    clientNetworkAdapter->send(buffer);
+
+
+    clientNetworkAdapter->send(buffer);
+    clientNetworkAdapter->send(buffer);
+
     return 0;
 }
 
