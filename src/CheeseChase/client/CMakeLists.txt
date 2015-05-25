@@ -1,7 +1,18 @@
 project( Client )
 
-include_directories( ${SHARED_INCLUDE_DIRS} )
+find_package( Qt4 REQUIRED )
 
-aux_source_directory(. SRC_LIST)
-add_executable(${PROJECT_NAME} ${SRC_LIST})
-target_link_libraries( ${PROJECT_NAME} LibShared )
+file(GLOB Client_SOURCES "*.cpp")
+file(GLOB Client_HEADERS "*.h")
+file(GLOB Client_FORMS "Forms/*.ui")
+
+qt4_wrap_cpp( Client_HEADERS_MOC ${Client_HEADERS} )
+qt4_wrap_ui( Client_FORMS_HEADERS ${Client_FORMS} )
+
+include( ${QT_USE_FILE} )
+include_directories( ${SHARED_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} )
+
+add_definitions( ${QT_DEFINITIONS} )
+
+add_executable(${PROJECT_NAME} ${Client_SOURCES} ${Client_HEADERS_MOC} ${Client_FORMS_HEADERS} )
+target_link_libraries( ${PROJECT_NAME} LibShared ${QT_LIBRARIES} )

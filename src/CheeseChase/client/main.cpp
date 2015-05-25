@@ -1,18 +1,22 @@
-#include <iostream>
-#include <thread>
+#include "mainwindow.h"
 
+#include <QApplication>
+#include <QInputDialog>
 
 using namespace std;
 
-void foo() {
-    cout << "thread client" << endl;
-}
-
-int main()
+int main(int argc, char *argv[])
 {
-    std::thread t1(foo);
-    cout << "Client: Hello World!" << endl;
-    t1.join();
-    return 0;
-}
+    QApplication app(argc, argv);
 
+    // get hostname
+    // QString host = QInputDialog::getText(NULL, "Host", "Enter a hostname");
+
+    // pass hostname to network manager
+
+    // setup mainwindow and show
+    MainWindow mainwindow;
+    mainwindow.show();
+
+    return app.exec();
+}
