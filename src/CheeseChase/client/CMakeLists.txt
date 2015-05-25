@@ -3,7 +3,7 @@ project( Client )
 find_package( Qt4 REQUIRED )
 
 file(GLOB Client_SOURCES "*.cpp")
-file(GLOB Client_HEADERS "*.h")
+file(GLOB Client_HEADERS "*.h" "*.hpp")
 file(GLOB Client_FORMS "Forms/*.ui")
 
 qt4_wrap_cpp( Client_HEADERS_MOC ${Client_HEADERS} )
