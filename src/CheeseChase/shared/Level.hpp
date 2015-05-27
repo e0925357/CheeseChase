@@ -33,9 +33,14 @@ namespace cheesechase
         //Updates the logic of the level.
         void update(double deltaT);
 
+        //Returns the number of columns of the level
+        unsigned int getCols();
+
+        //Returns the number of rows of the level
+        unsigned int getRows();
+
     private:
         std::vector<std::vector<Tile*>> tiles;
-
         Vec2i neighbourOffsets[8];
 	};
 }

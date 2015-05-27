@@ -60,4 +60,14 @@ namespace cheesechase {
     void Level::update(double deltaT) {
 
     }
+
+//Returns the number of columns of the level
+    unsigned int Level::getCols() {
+        return tiles.size();
+    }
+
+//Returns the number of rows of the level
+    unsigned int Level::getRows() {
+        return tiles[0].size();
+    }
 }

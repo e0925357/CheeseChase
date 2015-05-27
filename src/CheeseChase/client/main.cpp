@@ -1,22 +1,16 @@
-#include "mainwindow.h"
+#include "clientcontroller.h"
 
 #include <QApplication>
-#include <QInputDialog>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+    // setup
     QApplication app(argc, argv);
 
-    // get hostname
-    // QString host = QInputDialog::getText(NULL, "Host", "Enter a hostname");
-
-    // pass hostname to network manager
-
-    // setup mainwindow and show
-    MainWindow mainwindow;
-    mainwindow.show();
+    cheesechase::ClientController controller;
+    controller.run();
 
     return app.exec();
 }

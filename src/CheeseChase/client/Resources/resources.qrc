@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/level">
+        <file>floor.jpg</file>
+        <file>wall.jpg</file>
+        <file>mouse.png</file>
+    </qresource>
+</RCC>

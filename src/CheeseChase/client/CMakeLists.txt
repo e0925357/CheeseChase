@@ -8,11 +8,12 @@ file(GLOB Client_FORMS "Forms/*.ui")
 
 qt4_wrap_cpp( Client_HEADERS_MOC ${Client_HEADERS} )
 qt4_wrap_ui( Client_FORMS_HEADERS ${Client_FORMS} )
+qt4_add_resources( Client_RESOURCES Resources/resources.qrc )
 
 include( ${QT_USE_FILE} )
 include_directories( ${SHARED_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR} )
 
 add_definitions( ${QT_DEFINITIONS} )
 
-add_executable(${PROJECT_NAME} ${Client_SOURCES} ${Client_HEADERS_MOC} ${Client_FORMS_HEADERS} )
+add_executable(${PROJECT_NAME} ${Client_SOURCES} ${Client_HEADERS_MOC} ${Client_FORMS_HEADERS} ${Client_RESOURCES} )
 target_link_libraries( ${PROJECT_NAME} LibShared ${QT_LIBRARIES} )

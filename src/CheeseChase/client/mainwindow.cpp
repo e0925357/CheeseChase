@@ -1,50 +1,102 @@
+#include "gamemodel.h"
 #include "mainwindow.h"
+#include "Level.hpp"
+#include "Tile.hpp"
+#include "Wall.h"
+#include "Floor.h"
+#include "Vec2i.hpp"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+#include <iostream>
+
+cheesechase::MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    _ui(new Ui::MainWindow),
+    _scene(new QGraphicsScene(this)),
+    _gamemodel(nullptr),
+    _wallPixmap(QPixmap(":/level/wall.jpg")),
+    _floorPixmap(QPixmap(":/level/floor.jpg")),
+    _mousePixmap(QPixmap(":/level/mouse.png"))
 {
-    ui->setupUi(this);
+    _ui->setupUi(this);
+    _ui->graphicsView->setScene(_scene.get());
+    _ui->graphicsView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 
-    scene = new QGraphicsScene(this);
-    ui->graphicsView->setScene(scene);
-
-
-    QBrush redBrush(Qt::red);
-    QBrush blueBrush(Qt::blue);
-    QPen blackpen(Qt::black);
-
-    blackpen.setWidth(6);
-
-
-    // sceneDynamic->addEllipse(10, 10, 100, 100, blackpen, redBrush);
-    // sceneDynamic->addRect(10, 10, 50, 50, blackpen, blueBrush);
-
-    //rectangle->setFlag(QGraphicsItem::ItemIsMovable);
+    _scene->addText("work in progress here");
 }
 
-MainWindow::~MainWindow()
+cheesechase::MainWindow::~MainWindow()
 {
-    delete ui;
 }
 
-void MainWindow::on_pushButtonUp_clicked()
+void cheesechase::MainWindow::setModel(std::shared_ptr<cheesechase::GameModel> gamemodel)
 {
-    //ui->graphicsView->rotate(-10);
+    _gamemodel = std::move(gamemodel);
 }
 
-void MainWindow::on_pushButtonLeft_clicked()
+void cheesechase::MainWindow::render()
 {
-    //ui->graphicsView->rotate(10);
+    std::cout << "render" << std::endl;
+
+    // 1. render level
+    auto level = _gamemodel->getLevel();
+    unsigned int cols = level->getCols();
+    unsigned int rows = level->getRows();
+
+    for(unsigned int x = 0; x < cols; ++x)
+    {
+        for(unsigned int y = 0; y < rows; ++y)
+        {
+            Tile *tile = level->getTile(Vec2i(x,y));
+
+            // set the pixmap image corresponding to the type
+            QGraphicsPixmapItem *item;
+            if(tile->getTileType() == TileType::FLOOR)
+                item = _scene->addPixmap(_floorPixmap);
+            else
+                item = _scene->addPixmap(_wallPixmap);
+
+            // position the pixmap item
+            item->setOffset(_floorPixmap.width()*x, _floorPixmap.height()*y);
+            item->setTransformationMode(Qt::SmoothTransformation);
+        }
+    }
+
+    // 2. render mice
+    for( auto pos : _gamemodel->getMicePositions())
+    {
+        QGraphicsPixmapItem *item = _scene->addPixmap(_mousePixmap);
+
+        // colorize the mouse
+
+
+        item->setOffset(_floorPixmap.width()*pos[0], _floorPixmap.height()*pos[1]);
+        item->setTransformationMode(Qt::SmoothTransformation);
+    }
+
+
+    // 3. render wind
+
+    // center all
+    _ui->graphicsView->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
-void MainWindow::on_pushButtonDown_clicked()
+void cheesechase::MainWindow::on_pushButtonUp_clicked()
 {
-    // TODO
+    std::cout << "up" << std::endl;
 }
 
-void MainWindow::on_pushButtonRight_clicked()
+void cheesechase::MainWindow::on_pushButtonLeft_clicked()
 {
-    // TODO
+    std::cout << "left" << std::endl;
+}
+
+void cheesechase::MainWindow::on_pushButtonDown_clicked()
+{
+    std::cout << "down" << std::endl;
+}
+
+void cheesechase::MainWindow::on_pushButtonRight_clicked()
+{
+    std::cout << "right" << std::endl;
 }
