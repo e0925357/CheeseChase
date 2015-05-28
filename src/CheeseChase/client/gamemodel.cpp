@@ -30,7 +30,7 @@ cheesechase::Vec2d cheesechase::GameModel::getVirtualCheesePosition() const
 
 std::vector<cheesechase::Vec2d> cheesechase::GameModel::getMicePositions() const
 {
-    return std::vector<Vec2d> {{0.0, 5.0}, {5.0, 0.0}, {5.0, 5.0}, {7.0, 5.0}, {5.0, 7.0}};
+    return std::vector<Vec2d> {{0.0, 5.0}, {5.0, 0.0}, {5.0, 5.0}};
 }
 
 cheesechase::Tile *cheesechase::GameModel::getLevelTile(const Vec2i &pos) const

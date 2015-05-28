@@ -13,6 +13,7 @@ cheesechase::MainWindow::MainWindow(QWidget *parent) :
     _ui(new Ui::MainWindow),
     _scene(new QGraphicsScene(this)),
     _gamemodel(nullptr),
+    _playermodel(nullptr),
     _wallPixmap(QPixmap(":/level/wall.jpg")),
     _floorPixmap(QPixmap(":/level/floor.jpg")),
     _mousePixmap(QPixmap(":/level/mouse.png")),
@@ -29,10 +30,17 @@ cheesechase::MainWindow::~MainWindow()
 {
 }
 
-void cheesechase::MainWindow::setModel(std::shared_ptr<cheesechase::GameModel> gamemodel)
+void cheesechase::MainWindow::setGamemodel(std::shared_ptr<cheesechase::GameModel> gamemodel)
 {
     _gamemodel = std::move(gamemodel);
 }
+
+void cheesechase::MainWindow::setPlayermodel(std::shared_ptr<QStandardItemModel> playermodel)
+{
+    _playermodel = std::move(playermodel);
+    _ui->listView->setModel(_playermodel.get());
+}
+
 
 void cheesechase::MainWindow::render()
 {
