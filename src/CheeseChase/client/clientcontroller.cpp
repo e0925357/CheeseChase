@@ -41,7 +41,7 @@ void cheesechase::ClientController::run()
 
     // setup the render timer (calls render each x milliseconds)
     QObject::connect(_timer.get(), SIGNAL(timeout()), _view.get(), SLOT(render()));
-    _timer->start(500);
+    _timer->start(250);
 }
 
 // TODO DELETE!!

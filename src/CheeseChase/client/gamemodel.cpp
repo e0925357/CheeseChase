@@ -20,7 +20,7 @@ cheesechase::Vec2d cheesechase::GameModel::getWindVector()
 
 std::vector<cheesechase::Vec2d> cheesechase::GameModel::getMicePositions()
 {
-    return std::vector<Vec2d> {{0.0, 5.0}, {5.0, 0.0}, {5.0, 5.0}};
+    return std::vector<Vec2d> {{0.0, 5.0}, {5.0, 0.0}, {5.0, 5.0}, {7.0, 5.0}, {5.0, 7.0}};
 }
 
 std::shared_ptr<cheesechase::Level> cheesechase::GameModel::getLevel()

@@ -36,7 +36,7 @@ void cheesechase::MainWindow::setModel(std::shared_ptr<cheesechase::GameModel> g
 
 void cheesechase::MainWindow::render()
 {
-    std::cout << "render" << std::endl;
+    _scene->clear();
 
     // 1. render level
     auto level = _gamemodel->getLevel();
@@ -63,15 +63,43 @@ void cheesechase::MainWindow::render()
     }
 
     // 2. render mice
-    for( auto pos : _gamemodel->getMicePositions())
+    auto micePositions = _gamemodel->getMicePositions();
+    unsigned int mouseIdx = 0;
+    for( auto pos : micePositions)
     {
-        QGraphicsPixmapItem *item = _scene->addPixmap(_mousePixmap);
+        QPixmap mousePixmap(_mousePixmap);;
 
         // colorize the mouse
+        QColor color;
+        color.setHsvF(double(mouseIdx)/double(micePositions.size()),1.0,1.0,0.5);
 
+        QPainter painter(&mousePixmap);
+        painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+        painter.fillRect(mousePixmap.rect(), color);
+        painter.end();
 
-        item->setOffset(_floorPixmap.width()*pos[0], _floorPixmap.height()*pos[1]);
+        // add mouse to the scene
+        QGraphicsPixmapItem *item = _scene->addPixmap(mousePixmap);
+
+        // position the mouse
+        QTransform t;
+
+        t.translate(_floorPixmap.width()/2.0, _floorPixmap.height()/2.0);
+        t.translate(_floorPixmap.width()*pos[0], _floorPixmap.height()*pos[1]);
+        t.rotate(90 * (qrand() % 4));
+        t.translate(-_floorPixmap.width()/2.0, -_floorPixmap.height()/2.0);
+
+        item->setTransform(t);
+        //item->setOffset(_floorPixmap.width()*pos[0], _floorPixmap.height()*pos[1]);
+
+        // TODO rotate in the direction the mouse is moving
+        //item->setTransformOriginPoint(item->pos());
+        //item->setRotation(90 * (qrand() % 4));
+
+        // smoothing? fo' shizzle my nizzle
         item->setTransformationMode(Qt::SmoothTransformation);
+
+        ++mouseIdx;
     }
 
 
