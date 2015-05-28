@@ -20,7 +20,8 @@ namespace cheesechase {
     public:
         explicit MainWindow(QWidget *parent = 0);
         ~MainWindow();
-        void setModel(std::shared_ptr<GameModel> gamemodel);
+        void setGamemodel(std::shared_ptr<GameModel> gamemodel);
+        void setPlayermodel(std::shared_ptr<QStandardItemModel> playermodel);
 
     public slots:
         void render();
@@ -38,10 +39,12 @@ namespace cheesechase {
         std::unique_ptr<Ui::MainWindow> _ui;
         std::unique_ptr<QGraphicsScene> _scene;
         std::shared_ptr<GameModel> _gamemodel;
+        std::shared_ptr<QStandardItemModel> _playermodel;
 
         QPixmap _wallPixmap;
         QPixmap _floorPixmap;
         QPixmap _mousePixmap;
+        QPixmap _cheesePixmap;
     };
 }
 

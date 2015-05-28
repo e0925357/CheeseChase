@@ -2,17 +2,30 @@
 #include "gamemodel.h"
 #include "clientcontroller.h"
 #include "Level.hpp"
-#include <Wall.h>
-#include <Floor.h>
+#include "Wall.h"
+#include "Floor.h"
 #include <QApplication>
 #include <QInputDialog>
+#include <QTimer>
 
 cheesechase::ClientController::ClientController() :
     _gamemodel(new GameModel()),
     _view(new MainWindow()),
-    _timer(new QTimer(_view.get()))
+    _playermodel(new QStandardItemModel()),
+    _timer(new QTimer())
 {
+    // TODO DELETE!!
+    auto item1 = new QStandardItem("player 1");
+    auto item2 = new QStandardItem("(you) player 2");
+    auto item3 = new QStandardItem("player 3");
 
+    item1->setBackground(QBrush(QColor(255,0,0)));
+    item2->setBackground(QBrush(QColor(0,255,0)));
+    item3->setBackground(QBrush(QColor(0,0,255)));
+
+    _playermodel->appendRow(item1);
+    _playermodel->appendRow(item2);
+    _playermodel->appendRow(item3);
 }
 
 cheesechase::ClientController::~ClientController()
@@ -34,14 +47,15 @@ void cheesechase::ClientController::run()
     serverSetupMock();
 
     // connect the model to the view
-    _view->setModel(_gamemodel);
+    _view->setGamemodel(_gamemodel);
+    _view->setPlayermodel(_playermodel);
 
     // show the view
     _view->show();
 
     // setup the render timer (calls render each x milliseconds)
     QObject::connect(_timer.get(), SIGNAL(timeout()), _view.get(), SLOT(render()));
-    _timer->start(500);
+    _timer->start(250);
 }
 
 // TODO DELETE!!
