@@ -42,6 +42,7 @@ namespace cheesechase {
         QPixmap _wallPixmap;
         QPixmap _floorPixmap;
         QPixmap _mousePixmap;
+        QPixmap _cheesePixmap;
     };
 }
 

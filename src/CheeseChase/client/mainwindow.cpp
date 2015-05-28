@@ -1,6 +1,5 @@
 #include "gamemodel.h"
 #include "mainwindow.h"
-#include "Level.hpp"
 #include "Tile.hpp"
 #include "Wall.h"
 #include "Floor.h"
@@ -16,7 +15,8 @@ cheesechase::MainWindow::MainWindow(QWidget *parent) :
     _gamemodel(nullptr),
     _wallPixmap(QPixmap(":/level/wall.jpg")),
     _floorPixmap(QPixmap(":/level/floor.jpg")),
-    _mousePixmap(QPixmap(":/level/mouse.png"))
+    _mousePixmap(QPixmap(":/level/mouse.png")),
+    _cheesePixmap(QPixmap(":/level/cheese.png"))
 {
     _ui->setupUi(this);
     _ui->graphicsView->setScene(_scene.get());
@@ -37,20 +37,19 @@ void cheesechase::MainWindow::setModel(std::shared_ptr<cheesechase::GameModel> g
 void cheesechase::MainWindow::render()
 {
     _scene->clear();
+    QGraphicsPixmapItem *item;
 
     // 1. render level
-    auto level = _gamemodel->getLevel();
-    unsigned int cols = level->getCols();
-    unsigned int rows = level->getRows();
+    unsigned int cols = _gamemodel->getLevelCols();
+    unsigned int rows = _gamemodel->getLevelRows();
 
     for(unsigned int x = 0; x < cols; ++x)
     {
         for(unsigned int y = 0; y < rows; ++y)
         {
-            Tile *tile = level->getTile(Vec2i(x,y));
+            Tile *tile = _gamemodel->getLevelTile(Vec2i(x,y));
 
             // set the pixmap image corresponding to the type
-            QGraphicsPixmapItem *item;
             if(tile->getTileType() == TileType::FLOOR)
                 item = _scene->addPixmap(_floorPixmap);
             else
@@ -79,7 +78,7 @@ void cheesechase::MainWindow::render()
         painter.end();
 
         // add mouse to the scene
-        QGraphicsPixmapItem *item = _scene->addPixmap(mousePixmap);
+        item = _scene->addPixmap(mousePixmap);
 
         // position the mouse
         QTransform t;
@@ -90,11 +89,6 @@ void cheesechase::MainWindow::render()
         t.translate(-_floorPixmap.width()/2.0, -_floorPixmap.height()/2.0);
 
         item->setTransform(t);
-        //item->setOffset(_floorPixmap.width()*pos[0], _floorPixmap.height()*pos[1]);
-
-        // TODO rotate in the direction the mouse is moving
-        //item->setTransformOriginPoint(item->pos());
-        //item->setRotation(90 * (qrand() % 4));
 
         // smoothing? fo' shizzle my nizzle
         item->setTransformationMode(Qt::SmoothTransformation);
@@ -102,8 +96,25 @@ void cheesechase::MainWindow::render()
         ++mouseIdx;
     }
 
+    // 3. render cheese & virtual cheese
+    Vec2i cheesePosition = _gamemodel->getCheesePosition();
+    Vec2d virtualCheesePosition = _gamemodel->getVirtualCheesePosition();
 
-    // 3. render wind
+    QPixmap virtualCheesePixmap(_cheesePixmap);
+    QPainter painter(&virtualCheesePixmap);
+    painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    painter.fillRect(virtualCheesePixmap.rect(), QColor(255.0,255.0,255.0,120.0));
+    painter.end();
+
+    item = _scene->addPixmap(_cheesePixmap);
+    item->setOffset(_floorPixmap.width()*cheesePosition.getX(), _floorPixmap.height()*cheesePosition.getY());
+    item->setTransformationMode(Qt::SmoothTransformation);
+
+    item = _scene->addPixmap(virtualCheesePixmap);
+    item->setOffset(_floorPixmap.width()*virtualCheesePosition[0], _floorPixmap.height()*virtualCheesePosition[1]);
+    item->setTransformationMode(Qt::SmoothTransformation);
+
+    // 4. render wind
 
     // center all
     _ui->graphicsView->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);

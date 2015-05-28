@@ -48,7 +48,8 @@ namespace cheesechase {
 
 //Returns the position of the cheese
     Vec2i Level::getCheesePosition() const {
-        return Vec2i();
+        // stub
+        return Vec2i(4, 4);
     }
 
 //Adds a mouse with the given behaviour at the given position to the level.
